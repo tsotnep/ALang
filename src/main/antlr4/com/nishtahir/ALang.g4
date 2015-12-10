@@ -47,10 +47,12 @@ parameter
     ;
 
 expression
-    :   expression op=(INCR|DECR)            #exprIncrDecr
-    |   expression op=(MULT|DIV) expression    #exprMultDiv
-    |   expression op=(ADD|SUB) expression     #exprAddSub
-    |   expression op=('>' | '<' | '=') expression     #exprBoolean
+    :   expression op=(INCR|DECR)               #exprIncrDecr
+    |   expression op=(MULT|DIV) expression     #exprMultDiv
+    |   expression op=(ADD|SUB) expression      #exprAddSub
+    |   expression op=('>' | '<' | '=') expression          #exprBoolean
+    |   op=(MIN | MAX) '(' expression ',' expression ')'    #exprMinMax
+    |   SWAP '(' expression ',' expression ')'              #exprSwap
     |   '(' expression ')'                  #exprBracket
     |   expressionList                      #exprList
     |   index                               #exprIndex
@@ -71,7 +73,9 @@ EQL     :   '=' ;
 NEQL    :   '!=';
 
 RNG     :   '~' ;
-
+MIN     :   'min'|'MIN';
+MAX     :   'max'|'MAX';
+SWAP    :   'swap'|'SWAP';
 expressionList
     :   '[' expression (',' expression)* ']'
     ;

@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.max;
+import static org.apache.commons.lang3.ObjectUtils.min;
+
 /**
  * Visitor class to evaluate parser rules
  */
@@ -39,6 +42,24 @@ public class ALangEvalVisitor extends ALangBaseVisitor<Value> {
         ListValue value = ValueUtils.asListValue(tokenValueMap.get(identifier));
         Value expression = this.visit(ctx.expression());
         return value.setValueAtIndex(indexNo, expression);
+    }
+
+    @Override
+    public Value visitExprMinMax(ALangParser.ExprMinMaxContext ctx) {
+        Value lhs = this.visit(ctx.expression(0));
+        Value rhs = this.visit(ctx.expression(1));
+
+        try {
+            switch (ctx.op.getType()) {
+                case ALangParser.MAX:
+                    return max(lhs, rhs);
+                case ALangParser.MIN:
+                    return min(lhs, rhs);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedOperationException(lhs, rhs, ctx.start.getLine());
+        }
+        throw new UnknownOperatorException(ALangParser.tokenNames[ctx.op.getType()], ctx.start.getLine());
     }
 
     @Override
